@@ -1,0 +1,27 @@
+﻿{
+	"hosts": 
+	[
+		{
+			"hostname": "peridot-ng.int.bork.in",
+			"username": "root",
+			"privateKeyFile": "C:\\Code\\UpdateESXiCerts\\esxi.key",
+			"uploadFiles":
+			[
+				{ "remoteFile": "/etc/vmware/ssl/rui.crt", "localFile": "Y:\\Certs\\certificates\\bork.in.crt" },
+				{ "remoteFile": "/etc/vmware/ssl/rui.key", "localFile": "Y:\\Certs\\certificates\\bork.in.key" },
+			],
+			"runCommands": [ "/etc/init.d/rhttpproxy restart" ],
+		},
+		{
+			"hostname": "lapis-ng.int.bork.in",
+			"username": "root",
+			"privateKeyFile": "C:\\Code\\UpdateESXiCerts\\esxi.key",
+			"uploadFiles":
+			[
+				{ "remoteFile": "/etc/vmware/ssl/rui.crt", "localFile": "Y:\\Certs\\certificates\\bork.in.crt" },
+				{ "remoteFile": "/etc/vmware/ssl/rui.key", "localFile": "Y:\\Certs\\certificates\\bork.in.key" },
+			],
+			"runCommands": [ "/etc/init.d/rhttpproxy restart" ],
+		},
+	]
+}
