@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace SSHBot
 {
@@ -49,11 +48,20 @@ namespace SSHBot
 			{
 				Console.WriteLine($"Connecting to '{host.Hostname}' as '{host.Username}'.");
 
+				var connectionInfo = new ConnectionInfo(host.Hostname, host.Username, host.PrivateKeyFile != null ?
+					(AuthenticationMethod)new PrivateKeyAuthenticationMethod(host.Username, new PrivateKeyFile(host.PrivateKeyFile)) :
+					(AuthenticationMethod)new PasswordAuthenticationMethod(host.Username, host.Password));
+
+				try { using (var ecdsa = new System.Security.Cryptography.ECDsaCng()) ; }
+				catch (NotImplementedException)
+				{
+					var algsToRemove = connectionInfo.HostKeyAlgorithms.Keys.Where(algName => algName.StartsWith("ecdsa")).ToArray();
+					foreach (var algName in algsToRemove) connectionInfo.HostKeyAlgorithms.Remove(algName);
+				}
+
 				if (host.UploadFiles != null)
 				{
-					using (var sftp = host.PrivateKeyFile != null ?
-						new SftpClient(host.Hostname, host.Username, new PrivateKeyFile(host.PrivateKeyFile)) :
-						new SftpClient(host.Hostname, host.Username, host.Password))
+					using (var sftp = new SftpClient(connectionInfo))
 					{
 						sftp.Connect();
 
@@ -71,9 +79,7 @@ namespace SSHBot
 
 				if (host.RunCommands != null)
 				{
-					using (var ssh = host.PrivateKeyFile != null ?
-						new SshClient(host.Hostname, host.Username, new PrivateKeyFile(host.PrivateKeyFile)) :
-						new SshClient(host.Hostname, host.Username, host.Password))
+					using (var ssh = new SshClient(connectionInfo))
 					{
 						ssh.Connect();
 
@@ -93,9 +99,7 @@ namespace SSHBot
 
 				if (host.DownloadFiles != null)
 				{
-					using (var sftp = host.PrivateKeyFile != null ?
-						new SftpClient(host.Hostname, host.Username, new PrivateKeyFile(host.PrivateKeyFile)) :
-						new SftpClient(host.Hostname, host.Username, host.Password))
+					using (var sftp = new SftpClient(connectionInfo))
 					{
 						sftp.Connect();
 
