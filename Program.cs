@@ -9,7 +9,7 @@ using System.Text;
 
 namespace SSHBot
 {
-	class Config
+	sealed class Config
 	{
 		public class Host
 		{
@@ -52,6 +52,7 @@ namespace SSHBot
 					(AuthenticationMethod)new PrivateKeyAuthenticationMethod(host.Username, new PrivateKeyFile(host.PrivateKeyFile)) :
 					(AuthenticationMethod)new PasswordAuthenticationMethod(host.Username, host.Password));
 
+				// Disable ECDSA on platforms that don't support it.
 				try { using (var ecdsa = new System.Security.Cryptography.ECDsaCng()) ; }
 				catch (NotImplementedException)
 				{
